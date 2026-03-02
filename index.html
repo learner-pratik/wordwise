@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>WordWise — Daily English Learning</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- iOS / Safari PWA support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WordWise">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%236366f1'/%3E%3Ctext x='50%25' y='58%25' font-size='300' text-anchor='middle' dominant-baseline='middle'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
+
+  <!-- Theme & description meta -->
+  <meta name="theme-color" content="#6366f1">
+  <meta name="description" content="Learn one new English word every day. Daily words, weekly quizzes, progress tracking.">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- Open Graph (for sharing link previews) -->
+  <meta property="og:title" content="WordWise — Daily English Learning">
+  <meta property="og:description" content="Learn one new English word every day and get tested weekly.">
+  <meta property="og:type" content="website">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #e0e7ff;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --bg: #f1f5f9;
+      --bg-card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary-light: #312e81;
+      --success-light: #064e3b;
+      --danger-light: #7f1d1d;
+      --warning-light: #78350f;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .header-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { font-size: 28px; }
+    .logo-text { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, var(--primary), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .streak-badge {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .theme-btn {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { transform: scale(1.1); }
+
+    /* ── NAV TABS ── */
+    .nav {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+    }
+    .nav-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      gap: 4px;
+    }
+    .nav-btn {
+      padding: 14px 20px;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      display: flex; align-items: center; gap: 6px;
+      position: relative;
+    }
+    .nav-btn:hover { color: var(--primary); }
+    .nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .quiz-badge {
+      position: absolute; top: 8px; right: 6px;
+      width: 8px; height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── TODAY CARD ── */
+    .word-card {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+      border-radius: var(--radius);
+      padding: 32px;
+      color: white;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 40px rgba(99,102,241,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .word-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 300px; height: 300px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+    .word-card::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+    .word-category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(10px);
+    }
+    .word-of-day {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .word-phonetic {
+      font-size: 16px;
+      opacity: 0.8;
+      margin-bottom: 4px;
+      font-style: italic;
+    }
+    .word-pos {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .word-definition {
+      font-size: 17px;
+      line-height: 1.6;
+      opacity: 0.95;
+      position: relative;
+      z-index: 1;
+    }
+    .word-day-label {
+      font-size: 12px;
+      opacity: 0.7;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    /* ── DETAIL SECTIONS ── */
+    .detail-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .detail-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .example-item {
+      padding: 12px 16px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      border-left: 3px solid var(--primary);
+      color: var(--text);
+    }
+    .example-item:last-child { margin-bottom: 0; }
+    .example-item em { color: var(--primary); font-style: normal; font-weight: 600; }
+    .memory-tip {
+      padding: 14px 16px;
+      background: var(--warning-light);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    /* ── ACTIONS ── */
+    .action-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .btn {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,0.5); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-success {
+      background: var(--success);
+      color: white;
+      box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+    }
+    .btn-success:hover { background: #059669; transform: translateY(-1px); }
+    .btn-success:disabled { opacity: 0.6; cursor: default; transform: none; }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    .btn-outline:hover { background: var(--primary-light); }
+
+    /* ── NOTIFICATION BANNER ── */
+    .notif-banner {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 1px solid #86efac;
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    [data-theme="dark"] .notif-banner { background: #052e16; border-color: #166534; }
+    .notif-banner p { font-size: 14px; color: var(--text); }
+    .notif-banner strong { color: var(--success); }
+    .notif-banner .btn-notif {
+      padding: 7px 16px;
+      background: var(--success);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .notif-banner .btn-notif:hover { background: #059669; }
+
+    /* ── PROGRESS ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .stat-value { font-size: 32px; font-weight: 900; color: var(--primary); line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+    /* ── LIBRARY ── */
+    .library-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .search-box {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus { border-color: var(--primary); }
+    .filter-btn {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .words-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .word-tile {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+    }
+    .word-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+    .word-tile-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .word-tile-pos { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .word-tile-def { font-size: 13px; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .word-tile-cat {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .cat-everyday { background: var(--primary-light); color: var(--primary); }
+    .cat-professional { background: var(--success-light); color: var(--success); }
+    .cat-idiom { background: var(--warning-light); color: var(--warning); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 28px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal-word { font-size: 32px; font-weight: 900; color: var(--primary); margin-bottom: 4px; }
+    .modal-close {
+      float: right;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 32px;
+      text-align: center;
+      margin-left: 10px;
+      color: var(--text-muted);
+    }
+    .modal-close:hover { background: var(--danger-light); color: var(--danger); }
+
+    /* ── QUIZ ── */
+    .quiz-intro {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .quiz-intro h2 { font-size: 26px; font-weight: 900; margin-bottom: 10px; }
+    .quiz-intro p { color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
+    .quiz-intro .icon { font-size: 60px; margin-bottom: 16px; }
+    .quiz-countdown { margin-bottom: 24px; }
+    .quiz-countdown p { color: var(--text-muted); font-size: 15px; margin-bottom: 8px; }
+    .progress-bar-track {
+      height: 10px;
+      background: var(--bg);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), #8b5cf6);
+      border-radius: 10px;
+      transition: width 0.5s;
+    }
+    .quiz-question-num { font-size: 13px; color: var(--text-muted); }
+
+    .quiz-q-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .quiz-q-num { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+    .quiz-q-text { font-size: 20px; font-weight: 700; margin-bottom: 20px; line-height: 1.4; }
+    .quiz-word-highlight { color: var(--primary); }
+    .options-grid { display: grid; gap: 10px; }
+    .option-btn {
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+    .option-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+    .option-btn.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .option-btn.correct { border-color: var(--success); background: var(--success-light); color: var(--success); font-weight: 600; }
+    .option-btn.wrong { border-color: var(--danger); background: var(--danger-light); color: var(--danger); font-weight: 600; }
+    .option-btn:disabled { cursor: default; }
+
+    /* ── QUIZ RESULTS ── */
+    .quiz-results {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 32px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .score-circle {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-weight: 900;
+    }
+    .score-circle.excellent { background: var(--success-light); color: var(--success); }
+    .score-circle.good { background: var(--warning-light); color: var(--warning); }
+    .score-circle.needs-work { background: var(--danger-light); color: var(--danger); }
+    .score-num { font-size: 36px; line-height: 1; }
+    .score-label { font-size: 12px; font-weight: 600; }
+    .correction-item {
+      padding: 16px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+      border-left: 4px solid var(--danger);
+    }
+    .correction-word { font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+    .correction-your { font-size: 13px; color: var(--danger); margin-bottom: 4px; }
+    .correction-correct { font-size: 13px; color: var(--success); font-weight: 600; margin-bottom: 8px; }
+    .correction-def { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── PROGRESS TAB ── */
+    .progress-section h3 { font-size: 18px; font-weight: 800; margin-bottom: 16px; color: var(--text); }
+    .history-item {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .history-date { font-size: 13px; color: var(--text-muted); margin-bottom: 2px; }
+    .history-score-badge {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .cat-chart {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .cat-bar-item { flex: 1; }
+    .cat-bar-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+    .cat-bar-track { height: 8px; background: var(--bg); border-radius: 8px; overflow: hidden; margin-bottom: 4px; }
+    .cat-bar-fill { height: 100%; border-radius: 8px; }
+    .cat-bar-count { font-size: 11px; color: var(--text-muted); }
+
+    /* ── EMPTY STATES ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .empty-state p { font-size: 14px; line-height: 1.6; }
+
+    /* ── WORD LEARNED CELEBRATION ── */
+    @keyframes celebrate {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.05) rotate(-1deg); }
+      50% { transform: scale(1.05) rotate(1deg); }
+      75% { transform: scale(1.02) rotate(-0.5deg); }
+      100% { transform: scale(1); }
+    }
+    .celebrating { animation: celebrate 0.5s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.4s ease; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 9999;
+      transition: transform 0.3s;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    [data-theme="dark"] .toast { background: #f1f5f9; color: #1e293b; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .word-of-day { font-size: 32px; }
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
+      .stat-value { font-size: 24px; }
+      .words-grid { grid-template-columns: 1fr 1fr; }
+      .action-row { flex-direction: column; }
+    }
+
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+    .section-label { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+
+    /* ── iOS SAFE AREA (notch + home indicator) ── */
+    .header {
+      padding-top: env(safe-area-inset-top);
+    }
+    .main {
+      padding-bottom: calc(80px + env(safe-area-inset-bottom));
+      padding-left: max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
+    }
+    /* Install prompt banner */
+    .install-banner {
+      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      border: 1px solid #a5b4fc;
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    [data-theme="dark"] .install-banner { background: #1e1b4b; border-color: #4338ca; }
+    .install-banner p { font-size: 14px; color: var(--text); }
+    .install-banner strong { color: var(--primary); }
+    .btn-install {
+      padding: 7px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-install:hover { background: var(--primary-dark); }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">📚</span>
+      <span class="logo-text">WordWise</span>
+    </div>
+    <div class="header-right">
+      <div class="streak-badge" id="streakBadge">🔥 0</div>
+      <button class="theme-btn" id="themeBtn" title="Toggle dark mode">🌙</button>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" data-tab="today" onclick="switchTab('today')">📖 Today</button>
+    <button class="nav-btn" data-tab="library" onclick="switchTab('library')">🗂 Library</button>
+    <button class="nav-btn" data-tab="quiz" onclick="switchTab('quiz')">
+      🧠 Quiz
+      <span class="quiz-badge" id="quizBadge" style="display:none"></span>
+    </button>
+    <button class="nav-btn" data-tab="progress" onclick="switchTab('progress')">📈 Progress</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ─── TODAY TAB ─── -->
+  <div id="tab-today" class="tab-content active fade-in">
+    <div id="installBanner" class="install-banner" style="display:none">
+      <p>📱 <strong>Add to Home Screen</strong> to use WordWise like a native app — works offline too!</p>
+      <button class="btn-install" onclick="installPWA()">Install</button>
+    </div>
+    <div id="notifBanner" class="notif-banner" style="display:none">
+      <p><strong>🔔 Enable notifications</strong> to get a daily reminder to learn your word!</p>
+      <button class="btn-notif" onclick="requestNotifications()">Enable</button>
+    </div>
+    <div id="todayCard"></div>
+    <div id="learnedTodayMsg" style="display:none">
+      <div class="detail-card" style="text-align:center; padding:28px;">
+        <div style="font-size:48px; margin-bottom:12px;">✅</div>
+        <h3 style="font-size:20px; font-weight:800; margin-bottom:6px;">Word learned for today!</h3>
+        <p style="color:var(--text-muted); font-size:15px; line-height:1.6; margin-bottom:16px;">You've marked today's word as learned. Come back tomorrow for a new word. Keep your streak going! 🔥</p>
+        <button class="btn btn-outline" onclick="showTodayCard(true)">Review today's word</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── LIBRARY TAB ─── -->
+  <div id="tab-library" class="tab-content">
+    <div class="library-header">
+      <input class="search-box" id="searchBox" type="text" placeholder="🔍  Search words..." oninput="renderLibrary()">
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+      <button class="filter-btn" data-filter="everyday" onclick="setFilter('everyday')">💬 Everyday</button>
+      <button class="filter-btn" data-filter="professional" onclick="setFilter('professional')">💼 Professional</button>
+      <button class="filter-btn" data-filter="idiom" onclick="setFilter('idiom')">💡 Idioms</button>
+    </div>
+    <div id="wordsGrid" class="words-grid"></div>
+  </div>
+
+  <!-- ─── QUIZ TAB ─── -->
+  <div id="tab-quiz" class="tab-content">
+    <div id="quizArea"></div>
+  </div>
+
+  <!-- ─── PROGRESS TAB ─── -->
+  <div id="tab-progress" class="tab-content">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="statsTotal">0</div>
+        <div class="stat-label">Words Learned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statsStreak">0</div>
+        <div class="stat-label">Day Streak 🔥</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statsQuizzes">0</div>
+        <div class="stat-label">Quizzes Taken</div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-title">📊 Vocabulary Breakdown</div>
+      <div id="catBreakdown" class="cat-chart"></div>
+    </div>
+
+    <div class="progress-section">
+      <h3>📝 Quiz History</h3>
+      <div id="quizHistory"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- WORD MODAL -->
+<div class="modal-overlay" id="wordModal" onclick="closeModal(event)">
+  <div class="modal" id="wordModalContent"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  VOCABULARY DATABASE
+// ═══════════════════════════════════════════════
+const VOCAB = [
+  // EVERYDAY / CONVERSATIONAL
+  { id:1, word:"Candid", phonetic:"/ˈkændɪd/", pos:"adjective", cat:"everyday",
+    def:"Truthful and straightforward; frank in speech or expression.",
+    examples:["She gave a candid assessment of the situation, even though it was uncomfortable.", "I appreciated his candid feedback — it helped me improve.", "Let's have a candid conversation about what went wrong."],
+    tip:"Think of a 'candle' — it sheds clear, honest light on things." },
+
+  { id:2, word:"Astute", phonetic:"/əˈstjuːt/", pos:"adjective", cat:"professional",
+    def:"Having the ability to accurately assess situations and turn them to one's advantage; shrewd.",
+    examples:["She made an astute observation that changed our entire strategy.", "He's an astute businessman who rarely makes poor decisions.", "The astute investor spotted the opportunity before anyone else."],
+    tip:"Sounds like 'a-CUTE' — someone cute or clever in their thinking." },
+
+  { id:3, word:"Resilient", phonetic:"/rɪˈzɪliənt/", pos:"adjective", cat:"everyday",
+    def:"Able to recover quickly from difficulties; tough.",
+    examples:["She's incredibly resilient — she bounced back after every setback.", "The team remained resilient despite losing the first three matches.", "Children are often more resilient than adults give them credit for."],
+    tip:"Like a rubber band — it stretches but always bounces back to shape." },
+
+  { id:4, word:"Serendipity", phonetic:"/ˌserənˈdɪpɪti/", pos:"noun", cat:"everyday",
+    def:"The occurrence of events by chance in a happy or beneficial way; a fortunate accident.",
+    examples:["It was pure serendipity that we met at that coffee shop.", "The discovery of penicillin was a famous case of serendipity.", "Life is full of serendipity if you keep your eyes open."],
+    tip:"'Serendip' was the old name for Sri Lanka — a place famous for unexpected treasures." },
+
+  { id:5, word:"Eloquent", phonetic:"/ˈeləkwənt/", pos:"adjective", cat:"professional",
+    def:"Fluent or persuasive in speaking or writing; well-expressed.",
+    examples:["Her eloquent speech moved the entire audience to tears.", "He wrote an eloquent letter defending his position.", "The lawyer's eloquent arguments convinced the jury."],
+    tip:"'Elo-' sounds like 'hello' — someone who says 'hello' so well everyone listens!" },
+
+  { id:6, word:"Gregarious", phonetic:"/ɡrɪˈɡeəriəs/", pos:"adjective", cat:"everyday",
+    def:"Fond of company; sociable; enjoying the company of others.",
+    examples:["Her gregarious personality made her popular at every party.", "He's so gregarious — he never struggles to make new friends.", "Unlike her shy brother, she was naturally gregarious."],
+    tip:"'Greg' is a common first name for sociable guys — think of your friendly neighbour Greg." },
+
+  { id:7, word:"Tenacious", phonetic:"/tɪˈneɪʃəs/", pos:"adjective", cat:"professional",
+    def:"Not giving up easily; determined and persistent.",
+    examples:["She was tenacious in pursuing her dream, despite many rejections.", "His tenacious approach to problem-solving won him great respect.", "Be tenacious — success rarely comes easily."],
+    tip:"'Tenacious' sounds like 'tennis ace' — a player who never gives up at match point." },
+
+  { id:8, word:"Empathetic", phonetic:"/ˌempəˈθetɪk/", pos:"adjective", cat:"everyday",
+    def:"Showing an ability to understand and share the feelings of another person.",
+    examples:["A good manager should be empathetic toward their team's challenges.", "She's incredibly empathetic — she always knows what you're going through.", "Being empathetic doesn't mean agreeing; it means truly listening."],
+    tip:"'Empathy' = stepping into someone's shoes and feeling what they feel." },
+
+  { id:9, word:"Lucid", phonetic:"/ˈluːsɪd/", pos:"adjective", cat:"professional",
+    def:"Expressed clearly; easy to understand. Also: fully alert and coherent.",
+    examples:["His lucid explanation made a complex topic easy to grasp.", "She gave a lucid account of the events that had taken place.", "For the first time in days, he was lucid enough to recognise his family."],
+    tip:"'Lucid' comes from Latin 'lux' (light) — a lucid explanation sheds light on something." },
+
+  { id:10, word:"Meticulous", phonetic:"/mɪˈtɪkjʊləs/", pos:"adjective", cat:"professional",
+    def:"Very careful and precise, paying great attention to detail.",
+    examples:["She was meticulous in her research, checking every source twice.", "The meticulous planning paid off — the event ran without a hitch.", "He's meticulous about his finances and tracks every rupee he spends."],
+    tip:"'Met-iculous' — imagine someone who 'meets' every tiny requirement perfectly." },
+
+  { id:11, word:"Pensive", phonetic:"/ˈpensɪv/", pos:"adjective", cat:"everyday",
+    def:"Engaged in deep or serious thought; thoughtful, sometimes with a hint of sadness.",
+    examples:["She sat by the window in a pensive mood, staring at the rain.", "The pensive look on his face told me something was troubling him.", "After the news, he fell quiet and became quite pensive."],
+    tip:"'Pensive' contains 'pense' (French for 'think') — deep thinking." },
+
+  { id:12, word:"Pragmatic", phonetic:"/præɡˈmætɪk/", pos:"adjective", cat:"professional",
+    def:"Dealing with things sensibly and realistically; focused on practical results rather than ideals.",
+    examples:["We need a pragmatic solution, not an idealistic one.", "She took a pragmatic approach and fixed the immediate problem first.", "Being pragmatic sometimes means making tough, realistic choices."],
+    tip:"Pragmatic = practical. Both start with 'P' and prioritise what works." },
+
+  { id:13, word:"Whimsical", phonetic:"/ˈwɪmzɪkəl/", pos:"adjective", cat:"everyday",
+    def:"Playfully quaint or fanciful; not serious or sensible.",
+    examples:["The artist had a whimsical style, with floating teacups and dancing clocks.", "Her whimsical sense of humour always brought smiles to the room.", "The children's book had a delightfully whimsical plot."],
+    tip:"'Whim' means a sudden fancy — whimsical people follow playful whims." },
+
+  { id:14, word:"Ambivalent", phonetic:"/æmˈbɪvələnt/", pos:"adjective", cat:"everyday",
+    def:"Having mixed feelings or contradictory ideas about something or someone.",
+    examples:["She felt ambivalent about the job offer — excited but nervous.", "I'm ambivalent about the plan; there are pros and cons on both sides.", "He was ambivalent about moving abroad — thrilled yet anxious."],
+    tip:"'Ambi' means both (like ambidextrous) — feeling pulled in BOTH directions." },
+
+  { id:15, word:"Forthright", phonetic:"/ˈfɔːrθraɪt/", pos:"adjective", cat:"professional",
+    def:"Direct and outspoken; saying what you think clearly and without hesitation.",
+    examples:["She was forthright about her concerns during the board meeting.", "I appreciate his forthright manner — you always know where you stand.", "Being forthright doesn't mean being rude; it means being honest."],
+    tip:"'Forth' (forward) + 'right' — going straight forward, right to the point!" },
+
+  { id:16, word:"Nonchalant", phonetic:"/ˈnɒnʃələnt/", pos:"adjective", cat:"everyday",
+    def:"Feeling or appearing casually calm and relaxed; not displaying anxiety or enthusiasm.",
+    examples:["He was surprisingly nonchalant about missing his train.", "She shrugged with a nonchalant air, as if it was no big deal.", "His nonchalant attitude in a crisis actually calmed everyone down."],
+    tip:"French origin — 'non' (not) + 'chaloir' (to be concerned). Not concerned at all." },
+
+  { id:17, word:"Verbose", phonetic:"/vɜːˈboʊs/", pos:"adjective", cat:"professional",
+    def:"Using more words than needed; long-winded in speech or writing.",
+    examples:["His verbose emails took twice as long to read as necessary.", "The report was verbose — we asked her to trim it down significantly.", "Try not to be verbose in your presentation; keep it punchy."],
+    tip:"'Verb' = word. Verbose = overloaded with words." },
+
+  { id:18, word:"Tactful", phonetic:"/ˈtæktfʊl/", pos:"adjective", cat:"everyday",
+    def:"Having or showing a careful consideration for the feelings of others; diplomatic.",
+    examples:["She was tactful enough to point out the error without embarrassing him.", "A tactful response can prevent a small disagreement from becoming a conflict.", "He gave tactful feedback that was honest yet kind."],
+    tip:"'Tact' = the delicate touch. Like handling a fragile object carefully." },
+
+  { id:19, word:"Ebullient", phonetic:"/ɪˈbʊliənt/", pos:"adjective", cat:"everyday",
+    def:"Cheerful and full of energy; overflowing with enthusiasm and excitement.",
+    examples:["Her ebullient personality lit up the entire office.", "He gave an ebullient performance that had the crowd on their feet.", "Even on difficult days, she managed to stay ebullient."],
+    tip:"'Ebullient' comes from Latin 'ebullire' (to boil over) — enthusiasm boiling over!" },
+
+  { id:20, word:"Nuanced", phonetic:"/ˈnjuːɑːnst/", pos:"adjective", cat:"professional",
+    def:"Characterised by subtle distinctions or differences; not simplistic.",
+    examples:["Her nuanced understanding of the market gave us a competitive edge.", "The issue is more nuanced than a simple yes or no.", "His nuanced argument acknowledged both sides of the debate."],
+    tip:"Like a painting — up close you see subtle shades, not just black and white." },
+
+  // MORE PROFESSIONAL
+  { id:21, word:"Leverage", phonetic:"/ˈlevərɪdʒ/", pos:"verb / noun", cat:"professional",
+    def:"To use something to its maximum advantage; the power to influence a situation.",
+    examples:["We can leverage our existing customer base to expand into new markets.", "She used her connections to leverage a better deal.", "The startup leveraged social media to build a massive audience quickly."],
+    tip:"A lever magnifies force — to leverage something is to multiply its power." },
+
+  { id:22, word:"Expedite", phonetic:"/ˈekspɪdaɪt/", pos:"verb", cat:"professional",
+    def:"To make (an action or process) happen sooner or be accomplished more quickly.",
+    examples:["Can we expedite this process? The client needs results by Friday.", "She worked overtime to expedite the delivery of the report.", "The new software will expedite invoice processing significantly."],
+    tip:"'Expedi-' relates to feet — remove obstacles so your feet can move faster." },
+
+  { id:23, word:"Mitigate", phonetic:"/ˈmɪtɪɡeɪt/", pos:"verb", cat:"professional",
+    def:"To make less severe, serious, or painful; to reduce or lessen.",
+    examples:["We need to mitigate the risks before launching the product.", "The government introduced measures to mitigate the effects of the drought.", "Good communication can mitigate most workplace conflicts."],
+    tip:"'Miti-' from Latin 'mitis' (mild) — make something mild, soften its impact." },
+
+  { id:24, word:"Concise", phonetic:"/kənˈsaɪs/", pos:"adjective", cat:"professional",
+    def:"Giving a lot of information clearly in a few words; brief but comprehensive.",
+    examples:["Your summary should be concise — no more than half a page.", "A concise email is more likely to be read and acted upon.", "She has a gift for making complex ideas concise and accessible."],
+    tip:"'Con-cise' — cut (scissors/incise) everything out, keep only the essential." },
+
+  { id:25, word:"Proactive", phonetic:"/prəʊˈæktɪv/", pos:"adjective", cat:"professional",
+    def:"Creating or controlling a situation rather than just responding to it after it happens.",
+    examples:["Be proactive about addressing issues before they become major problems.", "A proactive manager anticipates challenges and prepares for them.", "She took a proactive approach to her career development."],
+    tip:"Pro (before) + active = acting BEFORE problems arise, not after." },
+
+  { id:26, word:"Streamline", phonetic:"/ˈstriːmlaɪn/", pos:"verb", cat:"professional",
+    def:"Make (an organisation or system) more efficient and effective by employing faster or simpler working methods.",
+    examples:["We need to streamline our onboarding process to save time.", "The merger was intended to streamline operations across both companies.", "New technology has streamlined how we handle customer queries."],
+    tip:"Like a streamlined (aerodynamic) car — less drag, moves faster and smoother." },
+
+  { id:27, word:"Pivotal", phonetic:"/ˈpɪvətəl/", pos:"adjective", cat:"professional",
+    def:"Of crucial importance in relation to the development or success of something.",
+    examples:["This deal is pivotal to our company's growth this year.", "She played a pivotal role in turning the failing project around.", "That conversation was pivotal — it changed everything."],
+    tip:"Like a pivot in basketball — everything swings or depends on that one turning point." },
+
+  { id:28, word:"Substantiate", phonetic:"/səbˈstænʃieɪt/", pos:"verb", cat:"professional",
+    def:"Provide evidence to support or prove the truth of something.",
+    examples:["Can you substantiate your claims with data?", "The report substantiated what we had suspected for months.", "Before presenting, make sure you can substantiate every claim."],
+    tip:"'Sub-stance' = solid ground. To substantiate is to put solid ground under your argument." },
+
+  { id:29, word:"Facilitate", phonetic:"/fəˈsɪlɪteɪt/", pos:"verb", cat:"professional",
+    def:"Make (an action or process) easy or easier; help bring about.",
+    examples:["Her role is to facilitate discussions between the two departments.", "Good infrastructure facilitates economic growth.", "I'll facilitate the meeting to ensure it stays on track."],
+    tip:"'Facile' means easy — to facilitate is to make things easy." },
+
+  { id:30, word:"Scalable", phonetic:"/ˈskeɪləbəl/", pos:"adjective", cat:"professional",
+    def:"Able to be changed in size or scale; able to grow without losing quality or efficiency.",
+    examples:["We need a scalable solution that can handle 10x growth.", "Their business model is highly scalable across different markets.", "Cloud computing makes infrastructure much more scalable."],
+    tip:"'Scale' a mountain — go higher and higher. A scalable business keeps growing." },
+
+  // IDIOMS / PHRASES
+  { id:31, word:"Hit the nail on the head", phonetic:"/hɪt ðə neɪl ɒn ðə hed/", pos:"idiom", cat:"idiom",
+    def:"To describe exactly what is causing a situation or problem; to be precisely correct.",
+    examples:["You've hit the nail on the head — that's exactly the issue we're facing.", "She hit the nail on the head with her diagnosis of our marketing problem.", "His comment really hit the nail on the head."],
+    tip:"Picture a carpenter striking a nail perfectly — precise and accurate, first time." },
+
+  { id:32, word:"Break the ice", phonetic:"/breɪk ðə aɪs/", pos:"idiom", cat:"idiom",
+    def:"To do or say something to relieve tension or begin conversation in an awkward social situation.",
+    examples:["He told a joke to break the ice at the start of the meeting.", "A round of introductions is a great way to break the ice.", "Once someone broke the ice, the conversation flowed naturally."],
+    tip:"Ice-breaker ships cut through frozen seas — breaking social 'ice' opens up smooth sailing." },
+
+  { id:33, word:"Beat around the bush", phonetic:"/biːt əˈraʊnd ðə bʊʃ/", pos:"idiom", cat:"idiom",
+    def:"To avoid coming to the main point; to talk about something in an indirect way.",
+    examples:["Stop beating around the bush and tell me what you really think.", "She spent ten minutes beating around the bush before asking for a raise.", "In negotiations, beating around the bush wastes everyone's time."],
+    tip:"Old hunting: beating bushes to scare birds out. Going around the issue, not to it." },
+
+  { id:34, word:"Bite the bullet", phonetic:"/baɪt ðə ˈbʊlɪt/", pos:"idiom", cat:"idiom",
+    def:"To endure a painful or difficult situation that is unavoidable; to do something unpleasant with courage.",
+    examples:["I bit the bullet and had the difficult conversation with my boss.", "Sometimes you just have to bite the bullet and deal with the problem.", "She bit the bullet and agreed to the surgery she'd been putting off."],
+    tip:"Soldiers once bit bullets during surgery to endure the pain — brave endurance." },
+
+  { id:35, word:"On the fence", phonetic:"/ɒn ðə fens/", pos:"idiom", cat:"idiom",
+    def:"Unable to decide between two options; neutral or uncommitted.",
+    examples:["I'm still on the fence about whether to accept the offer.", "She's on the fence about moving cities — there are pros and cons either way.", "The voters on the fence will decide the election."],
+    tip:"Imagine sitting on a fence — you could fall to either side. Undecided!" },
+
+  { id:36, word:"Cost an arm and a leg", phonetic:"/kɒst ən ɑːm ænd ə leɡ/", pos:"idiom", cat:"idiom",
+    def:"To be extremely expensive.",
+    examples:["That handbag costs an arm and a leg!", "Getting a flat in central Mumbai costs an arm and a leg.", "The renovation cost us an arm and a leg, but it was worth it."],
+    tip:"Imagine paying with your actual limbs — that's how painful the price feels!" },
+
+  { id:37, word:"Let the cat out of the bag", phonetic:"/let ðə kæt aʊt əv ðə bæɡ/", pos:"idiom", cat:"idiom",
+    def:"To accidentally reveal information that was supposed to be kept secret.",
+    examples:["I let the cat out of the bag about the surprise party.", "Don't let the cat out of the bag — it's meant to be a secret!", "He let the cat out of the bag about the company merger."],
+    tip:"Old market trick: a cat secretly swapped for a pig in a bag. Once opened — surprise!" },
+
+  { id:38, word:"Burn the midnight oil", phonetic:"/bɜːrn ðə ˈmɪdnaɪt ɔɪl/", pos:"idiom", cat:"idiom",
+    def:"To work late into the night; to study or work very hard at night.",
+    examples:["She burned the midnight oil to finish the proposal before the deadline.", "We burned the midnight oil for weeks leading up to the product launch.", "Don't burn the midnight oil too often — rest is important for productivity."],
+    tip:"Before electricity, people worked by oil lamp late at night — burning midnight oil." },
+
+  { id:39, word:"Under the weather", phonetic:"/ˈʌndər ðə ˈweðər/", pos:"idiom", cat:"idiom",
+    def:"Feeling ill or unwell; not in the best of health.",
+    examples:["I'm a bit under the weather today — I think I'm coming down with a cold.", "She called in sick because she was feeling under the weather.", "He looked a bit under the weather at the party last night."],
+    tip:"Ships sent sick sailors below deck to protect them from harsh weather — away from the elements." },
+
+  { id:40, word:"Spill the beans", phonetic:"/spɪl ðə biːnz/", pos:"idiom", cat:"idiom",
+    def:"To reveal secret or confidential information, especially by accident.",
+    examples:["Someone spilled the beans about the office reorganisation before it was announced.", "Don't spill the beans — she doesn't know about the surprise yet!", "He accidentally spilled the beans about the new product in an interview."],
+    tip:"Ancient Greece: beans used as votes in secret ballots. Spilling them revealed the vote!" },
+
+  // MORE EVERYDAY
+  { id:41, word:"Articulate", phonetic:"/ɑːˈtɪkjʊlɪt/", pos:"adjective / verb", cat:"professional",
+    def:"(adj) Able to speak fluently and coherently. (verb) To express an idea clearly.",
+    examples:["She's highly articulate and always expresses her ideas clearly.", "He struggled to articulate exactly how he was feeling.", "An articulate presenter can make any topic interesting."],
+    tip:"'Article' = distinct piece of writing/speech. Articulate = speaking in clear, distinct parts." },
+
+  { id:42, word:"Fathom", phonetic:"/ˈfæðəm/", pos:"verb", cat:"everyday",
+    def:"To understand (a difficult problem or situation) after much thought.",
+    examples:["I cannot fathom why he would make such a poor decision.", "She struggled to fathom the complexity of the new software.", "It's hard to fathom how much the world has changed in 20 years."],
+    tip:"A fathom is a unit of water depth — to fathom is to reach the bottom of something." },
+
+  { id:43, word:"Enigmatic", phonetic:"/ˌenɪɡˈmætɪk/", pos:"adjective", cat:"everyday",
+    def:"Difficult to interpret or understand; mysterious and puzzling.",
+    examples:["She had an enigmatic smile that made everyone wonder what she was thinking.", "The Mona Lisa is famous for its enigmatic expression.", "His enigmatic personality made him both fascinating and frustrating."],
+    tip:"An 'enigma' is a riddle or puzzle — enigmatic people are walking puzzles." },
+
+  { id:44, word:"Jovial", phonetic:"/ˈdʒoʊviəl/", pos:"adjective", cat:"everyday",
+    def:"Cheerful and friendly; good-humoured and full of good cheer.",
+    examples:["He had a jovial laugh that filled the entire room.", "The jovial atmosphere at the party put everyone at ease.", "Despite the setback, she remained jovial and positive."],
+    tip:"'Jove' was another name for Jupiter, the happy, jolly god. Jovial = like jolly Jupiter." },
+
+  { id:45, word:"Daunting", phonetic:"/ˈdɔːntɪŋ/", pos:"adjective", cat:"everyday",
+    def:"Seeming difficult to deal with in anticipation; intimidating.",
+    examples:["The list of tasks was daunting, but she tackled it methodically.", "Moving to a new country can be a daunting experience at first.", "The daunting challenge of learning a new language is worth it."],
+    tip:"'Daunt' = frighten. Daunting = something that makes even the brave feel a little scared." },
+
+  { id:46, word:"Jaded", phonetic:"/ˈdʒeɪdɪd/", pos:"adjective", cat:"everyday",
+    def:"Tired, bored, or lacking enthusiasm, typically after having too much of something.",
+    examples:["After years in the same job, he felt jaded and needed a change.", "Jaded travellers often miss the magic that first-time visitors feel.", "Don't become jaded — try to approach each day with fresh eyes."],
+    tip:"'Jade' is a horse worn out from overuse. A jaded person is worn out by too much." },
+
+  { id:47, word:"Impeccable", phonetic:"/ɪmˈpekəbəl/", pos:"adjective", cat:"professional",
+    def:"In accordance with the highest standards; faultless; perfect.",
+    examples:["Her impeccable attention to detail made her the best editor on the team.", "He was known for his impeccable taste in clothes.", "The service at the restaurant was absolutely impeccable."],
+    tip:"'Peccable' = capable of sin (from Latin). Im-peccable = completely without fault." },
+
+  { id:48, word:"Acumen", phonetic:"/ˈækjʊmən/", pos:"noun", cat:"professional",
+    def:"The ability to make good judgements and quick decisions, especially in a particular domain.",
+    examples:["Her business acumen helped the company triple its revenue in two years.", "His financial acumen is what makes him such a valuable advisor.", "Technical skills matter, but acumen is what separates good leaders from great ones."],
+    tip:"'Acu-' means sharp (like acupuncture). Acumen = a sharp, piercing mind." },
+
+  { id:49, word:"Discerning", phonetic:"/dɪˈsɜːrnɪŋ/", pos:"adjective", cat:"professional",
+    def:"Having or showing good judgement; able to see quality and differences clearly.",
+    examples:["Only a discerning reader would notice the subtle shift in tone.", "She has a discerning eye for talent and hired the best team.", "A discerning customer won't settle for anything below high quality."],
+    tip:"'Dis-cern' = to separate/sift. Discerning = sifting carefully to find what's truly good." },
+
+  { id:50, word:"Hone", phonetic:"/hoʊn/", pos:"verb", cat:"professional",
+    def:"To sharpen (a skill) to a high level; to perfect over time.",
+    examples:["She spent years honing her public speaking skills.", "He honed his craft through years of dedicated practice.", "This internship is a chance to hone your analytical abilities."],
+    tip:"A hone is a sharpening stone. To hone a skill = to sharpen it to a razor's edge." },
+
+  // MORE IDIOMS
+  { id:51, word:"The ball is in your court", phonetic:"/ðə bɔːl ɪz ɪn jɔːr kɔːrt/", pos:"idiom", cat:"idiom",
+    def:"It is now your turn to take action or make a decision.",
+    examples:["I've made my offer — the ball is in your court now.", "We've submitted all the documents; the ball is in their court.", "She's done everything she can. The ball is in his court."],
+    tip:"Tennis: when the ball lands in YOUR court, it's YOUR turn to play." },
+
+  { id:52, word:"Miss the boat", phonetic:"/mɪs ðə boʊt/", pos:"idiom", cat:"idiom",
+    def:"To miss an opportunity; to fail to take advantage of a chance.",
+    examples:["If you don't apply this week, you'll miss the boat on this opportunity.", "He missed the boat on investing in that company early.", "Act quickly — don't miss the boat on this limited offer."],
+    tip:"Imagine a ship sailing away without you. You were too late to board it." },
+
+  { id:53, word:"Once in a blue moon", phonetic:"/wʌns ɪn ə bluː muːn/", pos:"idiom", cat:"idiom",
+    def:"Very rarely; once in a very long time.",
+    examples:["She only visits her hometown once in a blue moon.", "He complains once in a blue moon, so when he does, I take it seriously.", "Events like this happen only once in a blue moon."],
+    tip:"A 'blue moon' is a second full moon in one month — rare, but it does happen." },
+
+  { id:54, word:"Pull someone's leg", phonetic:"/pʊl ˈsʌmwʌnz leɡ/", pos:"idiom", cat:"idiom",
+    def:"To playfully tease or joke with someone; to say something untrue in a joking way.",
+    examples:["I was just pulling your leg — the meeting isn't on Sunday, it's Monday.", "Are you serious about that or are you pulling my leg?", "Don't believe everything he says; he loves pulling people's legs."],
+    tip:"Old British slang — imagine tripping someone as a playful prank." },
+
+  { id:55, word:"A blessing in disguise", phonetic:"/ə ˈblesɪŋ ɪn dɪˈsɡaɪz/", pos:"idiom", cat:"idiom",
+    def:"Something that seems bad or unlucky at first but turns out to be good in the end.",
+    examples:["Losing that job was a blessing in disguise — I found something much better.", "The rain was a blessing in disguise; it kept the crowds away and we had the place to ourselves.", "Sometimes setbacks are really blessings in disguise."],
+    tip:"Luck wearing a costume! It looks like misfortune but is actually fortune in disguise." },
+
+  { id:56, word:"Get cold feet", phonetic:"/ɡet koʊld fiːt/", pos:"idiom", cat:"idiom",
+    def:"To suddenly become nervous or hesitant about doing something, especially something already planned.",
+    examples:["He got cold feet right before the presentation and considered cancelling.", "She got cold feet about moving abroad and decided to stay.", "Many entrepreneurs get cold feet just before launching — push through it."],
+    tip:"Imagine nervousness draining the warm blood from your feet, literally leaving them cold." },
+
+  { id:57, word:"Every cloud has a silver lining", phonetic:"/ˈevri klaʊd hæz ə ˈsɪlvər ˈlaɪnɪŋ/", pos:"idiom", cat:"idiom",
+    def:"Every difficult or sad situation has a positive aspect, even if it is not immediately obvious.",
+    examples:["I failed my exam, but every cloud has a silver lining — now I study more effectively.", "He lost the deal, but every cloud has a silver lining: the rejection led to a better partnership.", "Remember, every cloud has a silver lining."],
+    tip:"Dark clouds have bright silver edges when the sun is behind them — hope behind hardship." },
+
+  { id:58, word:"Bite off more than you can chew", phonetic:"/baɪt ɒf mɔːr ðæn juː kæn tʃuː/", pos:"idiom", cat:"idiom",
+    def:"To take on a commitment that is too much for you to handle.",
+    examples:["By taking on five projects at once, he bit off more than he could chew.", "Don't bite off more than you can chew — focus on quality, not quantity.", "She realised she had bitten off more than she could chew after signing up for three committees."],
+    tip:"Imagine trying to eat an enormous bite of food — too much, impossible to chew!" },
+
+  // PROFESSIONAL PHRASES
+  { id:59, word:"Move the needle", phonetic:"/muːv ðə ˈniːdəl/", pos:"phrase", cat:"professional",
+    def:"To have a meaningful impact on something; to make significant progress.",
+    examples:["We need a strategy that actually moves the needle on customer satisfaction.", "Small tweaks aren't enough — we need something that really moves the needle.", "Has this campaign moved the needle on brand awareness?"],
+    tip:"Like a speedometer needle — if it doesn't move, you're going nowhere." },
+
+  { id:60, word:"Value proposition", phonetic:"/ˈvæljuː ˌprɒpəˈzɪʃən/", pos:"phrase", cat:"professional",
+    def:"A statement that explains how your product/service solves a problem and why it is better than alternatives.",
+    examples:["Our value proposition is simple: faster delivery at a lower cost.", "Before pitching investors, clarify your value proposition.", "A strong value proposition answers the question: 'Why should I choose you?'"],
+    tip:"Proposition = an offer. Value proposition = the VALUE you're offering someone." },
+
+  { id:61, word:"Paradigm shift", phonetic:"/ˈpærədaɪm ʃɪft/", pos:"phrase", cat:"professional",
+    def:"A fundamental change in approach, assumptions, or way of thinking in a field.",
+    examples:["The internet caused a paradigm shift in how we communicate.", "Remote work has created a paradigm shift in how companies think about offices.", "AI represents a paradigm shift in almost every industry."],
+    tip:"A 'paradigm' is a pattern or model. A shift = it completely changes the pattern." },
+
+  { id:62, word:"Pain points", phonetic:"/peɪn pɔɪnts/", pos:"phrase", cat:"professional",
+    def:"The specific problems or frustrations that customers or employees are experiencing.",
+    examples:["Understanding your customers' pain points is key to building a great product.", "What are the main pain points in our current onboarding process?", "Our product addresses three core pain points in the supply chain."],
+    tip:"'Pain' = problems. Pain points = the exact spots where people feel that pain." },
+
+  { id:63, word:"Low-hanging fruit", phonetic:"/loʊ ˈhæŋɪŋ fruːt/", pos:"phrase", cat:"professional",
+    def:"The easiest tasks or goals to achieve; quick wins that require minimal effort.",
+    examples:["Let's start with the low-hanging fruit before tackling the complex problems.", "Fixing the checkout process is low-hanging fruit — big impact, easy to implement.", "Don't ignore low-hanging fruit just because it seems too simple."],
+    tip:"Fruit you can grab without a ladder. Easy wins = easy pickings right at arm's reach." },
+
+  { id:64, word:"Circle back", phonetic:"/ˈsɜːrkəl bæk/", pos:"phrase", cat:"professional",
+    def:"To return to a topic or task at a later time; to follow up on something.",
+    examples:["Let's table that for now and circle back to it at the end of the meeting.", "I'll circle back with you once I have the numbers.", "Can we circle back to this discussion next week?"],
+    tip:"Like a boomerang — it goes away but comes back to you later." },
+
+  { id:65, word:"Take ownership", phonetic:"/teɪk ˈoʊnərʃɪp/", pos:"phrase", cat:"professional",
+    def:"To accept full responsibility for something, including its problems and outcomes.",
+    examples:["The best employees take ownership of their work without being asked.", "She took ownership of the mistake and presented a clear fix.", "Great leaders take ownership even when things go wrong."],
+    tip:"An 'owner' is fully responsible. Taking ownership = treating it as if it's yours." },
+
+  { id:66, word:"Deep dive", phonetic:"/diːp daɪv/", pos:"phrase", cat:"professional",
+    def:"A thorough, in-depth examination or investigation of a topic or problem.",
+    examples:["Let's do a deep dive into the data before drawing any conclusions.", "The audit team conducted a deep dive into our financial processes.", "I spent the weekend doing a deep dive on competitor strategies."],
+    tip:"Diving DEEP into the water vs skimming the surface. Thorough vs superficial." },
+
+  // MORE EVERYDAY WORDS
+  { id:67, word:"Amiable", phonetic:"/ˈeɪmiəbəl/", pos:"adjective", cat:"everyday",
+    def:"Having or displaying a friendly and pleasant manner; good-natured and likeable.",
+    examples:["The new colleague was amiable and quickly made friends in the office.", "Despite the long wait, the staff remained amiable and helpful.", "He had an amiable personality that made everyone feel welcome."],
+    tip:"'Ami' is French for friend. Amiable = like a good friend, warm and pleasant." },
+
+  { id:68, word:"Blunder", phonetic:"/ˈblʌndər/", pos:"noun / verb", cat:"everyday",
+    def:"A stupid or careless mistake. (verb) To make such a mistake.",
+    examples:["The typo in the email was a small but embarrassing blunder.", "He blundered badly by mentioning the competitor's product to the client.", "Every expert has made countless blunders on the road to mastery."],
+    tip:"Sounds like 'thunder' — a blunder can come crashing down unexpectedly!" },
+
+  { id:69, word:"Candor", phonetic:"/ˈkændər/", pos:"noun", cat:"everyday",
+    def:"The quality of being open and honest; frankness.",
+    examples:["I appreciated her candor in telling me directly what she thought.", "His candor in the interview impressed the panel, even when discussing failures.", "In a good friendship, candor is as important as kindness."],
+    tip:"Same root as 'candid' — from Latin 'candidus' meaning white, pure, open." },
+
+  { id:70, word:"Inevitable", phonetic:"/ɪnˈevɪtəbəl/", pos:"adjective", cat:"everyday",
+    def:"Certain to happen; unable to be avoided or prevented.",
+    examples:["Change is inevitable; what matters is how you adapt.", "A conflict seemed inevitable given the two sides' different expectations.", "It was inevitable that the company would need to restructure."],
+    tip:"'Evitable' = avoidable (rare word). In-evitable = NOT avoidable. Bound to happen." },
+
+  { id:71, word:"Haggle", phonetic:"/ˈhæɡəl/", pos:"verb", cat:"everyday",
+    def:"To dispute or bargain persistently, especially over the price of something.",
+    examples:["At the market, you can haggle for almost everything.", "She haggled the price down by 30% before finally agreeing.", "Don't be shy to haggle — the worst they can say is no."],
+    tip:"Sounds like a tug-of-war. Both sides pulling at the price until someone budges." },
+
+  { id:72, word:"Gloat", phonetic:"/ɡloʊt/", pos:"verb", cat:"everyday",
+    def:"To dwell on one's own success or another's misfortune with smugness or self-satisfied joy.",
+    examples:["It's not a good look to gloat when you win — be gracious instead.", "She resisted the urge to gloat after being proved right.", "He gloated over the victory in a way that annoyed even his own supporters."],
+    tip:"'Gloat' sounds like 'float' — floating smugly on the cloud of your own success." },
+
+  { id:73, word:"Robust", phonetic:"/rəʊˈbʌst/", pos:"adjective", cat:"professional",
+    def:"Strong and healthy; vigorous. In business: able to withstand or overcome adverse conditions.",
+    examples:["We need a robust plan that can handle unexpected challenges.", "The economy showed robust growth despite global uncertainty.", "Their IT infrastructure is robust enough to handle peak traffic."],
+    tip:"'Rob-ust' — imagine a big, robust oak tree that doesn't bend easily in storms." },
+
+  { id:74, word:"Pervasive", phonetic:"/pəˈveɪsɪv/", pos:"adjective", cat:"professional",
+    def:"Spreading widely throughout an area or group of people; present everywhere.",
+    examples:["Social media has a pervasive influence on modern culture.", "There was a pervasive sense of anxiety throughout the company during the merger.", "Misinformation has become pervasive in the digital age."],
+    tip:"'Pervade' = spread throughout. Like a scent that fills every corner of a room." },
+
+  { id:75, word:"Tangible", phonetic:"/ˈtændʒɪbəl/", pos:"adjective", cat:"professional",
+    def:"Perceptible by touch; clear and definite; real and concrete rather than abstract.",
+    examples:["We need to show tangible results by the end of the quarter.", "The project produced tangible benefits for the local community.", "I need tangible evidence, not just promises and words."],
+    tip:"'Tangible' from Latin 'tangere' (to touch) — if you can touch it or clearly see it, it's tangible." },
+
+  { id:76, word:"Inquisitive", phonetic:"/ɪnˈkwɪzɪtɪv/", pos:"adjective", cat:"everyday",
+    def:"Having or showing an interest in learning things; curious.",
+    examples:["She has an inquisitive mind that constantly seeks out new knowledge.", "The inquisitive child asked endless questions about how things work.", "Being inquisitive is one of the most valuable traits in any profession."],
+    tip:"'Inquire' = ask/investigate. Inquisitive = always inquiring, always curious." },
+
+  { id:77, word:"Commensurate", phonetic:"/kəˈmenʃərɪt/", pos:"adjective", cat:"professional",
+    def:"Corresponding in size or degree; in proportion to; appropriate to.",
+    examples:["Your salary should be commensurate with your experience and skills.", "The penalties are not commensurate with the severity of the offence.", "We offer rewards commensurate with performance."],
+    tip:"'Comm' (together) + 'measure' — measured together, in equal proportion." },
+
+  { id:78, word:"Quantify", phonetic:"/ˈkwɒntɪfaɪ/", pos:"verb", cat:"professional",
+    def:"To express or measure the quantity of something; to put a number or value on something.",
+    examples:["Can you quantify the impact of this change in terms of revenue?", "It's difficult to quantify how much goodwill you build with customers through great service.", "We need to quantify the risks before making a decision."],
+    tip:"'Quant' = quantity. To quantify = to turn a vague sense into a clear number." },
+
+  { id:79, word:"Flabbergasted", phonetic:"/ˈflæbərɡæstɪd/", pos:"adjective", cat:"everyday",
+    def:"Overcome with surprise and shock; utterly astonished.",
+    examples:["I was absolutely flabbergasted when I heard the news.", "The unexpected results left the entire team flabbergasted.", "She was flabbergasted to discover she had won first prize."],
+    tip:"Sounds dramatic and explosive — because that's exactly how you feel: shocked and gasping!" },
+
+  { id:80, word:"Underpin", phonetic:"/ˌʌndərˈpɪn/", pos:"verb", cat:"professional",
+    def:"To support or form the basis for; to strengthen from below.",
+    examples:["Strong data underpins every decision we make.", "Trust is the value that underpins all our client relationships.", "The research underpins the case for the new policy."],
+    tip:"'Under' + 'pin' — like putting pins/supports UNDER a structure to hold it firmly." },
+
+  { id:81, word:"Sanguine", phonetic:"/ˈsæŋɡwɪn/", pos:"adjective", cat:"everyday",
+    def:"Optimistic, especially in a difficult situation; cheerfully confident.",
+    examples:["She remained sanguine about the company's future despite the setbacks.", "I'm sanguine that we'll find a solution — we always do.", "Being sanguine doesn't mean ignoring problems; it means believing you can solve them."],
+    tip:"Latin 'sanguis' = blood. Medieval belief: people with warm blood were naturally cheerful and optimistic." },
+
+  { id:82, word:"Tactile", phonetic:"/ˈtæktaɪl/", pos:"adjective", cat:"everyday",
+    def:"Of or connected with the sense of touch; perceptible by touch.",
+    examples:["Some people are tactile learners who understand things better by handling them.", "The tactile quality of the fabric made it feel luxurious.", "Children are highly tactile in how they explore the world."],
+    tip:"'Tact-' from Latin 'tactus' (touch) — same root as 'contact' and 'intact'." },
+
+  { id:83, word:"Discrepancy", phonetic:"/dɪˈskrepənsi/", pos:"noun", cat:"professional",
+    def:"A lack of compatibility or similarity between two or more facts; an inconsistency.",
+    examples:["There's a discrepancy between what was promised and what was delivered.", "The auditor noticed a significant discrepancy in the accounts.", "We need to investigate the discrepancy before issuing the report."],
+    tip:"'Dis-' (apart) + 'crepare' (to creak) — things that don't fit together make an unsettling creak." },
+
+  { id:84, word:"Lament", phonetic:"/ləˈment/", pos:"verb / noun", cat:"everyday",
+    def:"To feel or express great sorrow or regret; to mourn or grieve about something.",
+    examples:["She lamented the fact that so few people read books anymore.", "He lamented the loss of his mentor with a heartfelt tribute.", "Stop lamenting what could have been and focus on what can still be."],
+    tip:"'La-ment' — sounds like a moan. That long, sorrowful sound of grief." },
+
+  { id:85, word:"Forthcoming", phonetic:"/fɔːrθˈkʌmɪŋ/", pos:"adjective", cat:"professional",
+    def:"About to happen or appear soon. Also: willing to give information; helpful.",
+    examples:["The forthcoming announcement will affect all employees.", "He wasn't very forthcoming with details about the plan.", "The forthcoming quarter looks promising based on early data."],
+    tip:"'Forth' = forward. Forthcoming = coming forward, either in time or with information." },
+
+  { id:86, word:"Reinforce", phonetic:"/ˌriːɪnˈfɔːrs/", pos:"verb", cat:"professional",
+    def:"To strengthen or support, especially by providing more material or evidence; to make stronger.",
+    examples:["Good feedback reinforces positive behaviour.", "The new data reinforces our original hypothesis.", "Regular practice reinforces what you've learned."],
+    tip:"'Re-' (again) + 'in-force' — adding force again and again to make something stronger." },
+
+  { id:87, word:"Innate", phonetic:"/ɪˈneɪt/", pos:"adjective", cat:"everyday",
+    def:"Inborn; natural; existing from birth rather than learned.",
+    examples:["She has an innate talent for music that no amount of teaching can fully explain.", "Some leadership qualities are innate, but many can be developed.", "His innate curiosity has driven him throughout his career."],
+    tip:"'In-nate' = born-in. Like nature, it comes from within, not from the outside." },
+
+  { id:88, word:"Scrutinise", phonetic:"/ˈskruːtɪnaɪz/", pos:"verb", cat:"professional",
+    def:"To examine or inspect closely and critically; to look at in great detail.",
+    examples:["The committee will scrutinise the budget before approving it.", "Investors will scrutinise every detail of the new business plan.", "Every clause of the contract was scrutinised by the legal team."],
+    tip:"'Scrutin-' from Latin 'scrutari' (to search through rubbish) — digging through everything carefully." },
+
+  { id:89, word:"Volatile", phonetic:"/ˈvɒlətaɪl/", pos:"adjective", cat:"professional",
+    def:"Liable to change rapidly and unpredictably, especially for the worse; easily inflamed.",
+    examples:["The stock market has been extremely volatile this quarter.", "His volatile temper made him difficult to work with.", "Volatile situations require calm, measured leadership."],
+    tip:"From Latin 'volare' (to fly) — like something that can fly off in any direction at any moment." },
+
+  { id:90, word:"Succinct", phonetic:"/səkˈsɪŋkt/", pos:"adjective", cat:"professional",
+    def:"Briefly and clearly expressed; marked by compact precise expression without wasted words.",
+    examples:["Please keep your summary succinct — one page maximum.", "A succinct message is always more impactful than a long rambling one.", "Her succinct presentation covered everything in just eight minutes."],
+    tip:"Like a belt pulled tight — succinctly holding everything in compactly." },
+];
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+const KEY = {
+  startDate: 'ww_startDate',
+  learned: 'ww_learned',
+  quizHistory: 'ww_quizHistory',
+  streak: 'ww_streak',
+  theme: 'ww_theme',
+  notifEnabled: 'ww_notif',
+};
+
+function getState(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+}
+function setState(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+}
+
+// Initialise start date on first visit
+function initStartDate() {
+  if (!localStorage.getItem(KEY.startDate)) {
+    setState(KEY.startDate, new Date().toISOString().split('T')[0]);
+  }
+}
+
+function getTodayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function getDayIndex() {
+  const start = new Date(getState(KEY.startDate, getTodayStr()));
+  const today = new Date(getTodayStr());
+  const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+  return diff % VOCAB.length;
+}
+
+function getTodaysWord() {
+  return VOCAB[getDayIndex()];
+}
+
+function getLearnedWords() {
+  return getState(KEY.learned, []);
+}
+
+function hasLearnedToday() {
+  const learned = getLearnedWords();
+  return learned.some(l => l.date === getTodayStr());
+}
+
+function markTodayLearned() {
+  const word = getTodaysWord();
+  const learned = getLearnedWords();
+  if (!learned.some(l => l.date === getTodayStr())) {
+    learned.push({ id: word.id, date: getTodayStr(), word: word.word });
+    setState(KEY.learned, learned);
+  }
+  updateStreak();
+}
+
+// ═══════════════════════════════════════════════
+//  STREAK
+// ═══════════════════════════════════════════════
+function updateStreak() {
+  const today = getTodayStr();
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  let streak = getState(KEY.streak, { count: 0, lastDate: null });
+  if (streak.lastDate === today) return;
+  if (streak.lastDate === yesterday) {
+    streak.count++;
+  } else if (streak.lastDate !== today) {
+    streak.count = 1;
+  }
+  streak.lastDate = today;
+  setState(KEY.streak, streak);
+  document.getElementById('streakBadge').textContent = '🔥 ' + streak.count;
+  document.getElementById('statsStreak').textContent = streak.count;
+}
+
+function getStreak() {
+  return getState(KEY.streak, { count: 0, lastDate: null }).count;
+}
+
+// ═══════════════════════════════════════════════
+//  NOTIFICATIONS
+// ═══════════════════════════════════════════════
+function checkNotificationBanner() {
+  const banner = document.getElementById('notifBanner');
+  if (!('Notification' in window) || Notification.permission === 'granted') {
+    banner.style.display = 'none';
+  } else if (Notification.permission !== 'denied') {
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function requestNotifications() {
+  Notification.requestPermission().then(p => {
+    if (p === 'granted') {
+      showToast('🔔 Notifications enabled! Open WordWise daily to get your reminder.');
+      document.getElementById('notifBanner').style.display = 'none';
+      setState(KEY.notifEnabled, true);
+      triggerDailyNotification();
+    } else {
+      showToast('Notifications blocked. Enable them in browser settings.');
+    }
+  });
+}
+
+function triggerDailyNotification() {
+  if (Notification.permission !== 'granted') return;
+  const lastNotif = localStorage.getItem('ww_lastNotif');
+  const today = getTodayStr();
+  if (lastNotif === today) return;
+  const word = getTodaysWord();
+  const notif = new Notification('📚 WordWise — Today\'s Word!', {
+    body: `"${word.word}" — ${word.def.slice(0, 80)}...`,
+    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>'
+  });
+  localStorage.setItem('ww_lastNotif', today);
+  notif.onclick = () => window.focus();
+}
+
+// ═══════════════════════════════════════════════
+//  QUIZ ENGINE
+// ═══════════════════════════════════════════════
+let currentQuiz = null;
+let quizAnswers = {};
+let currentFilter = 'all';
+
+function getQuizWords() {
+  const learned = getLearnedWords();
+  if (learned.length < 7) return null;
+
+  // Get last 7 learned words not already in a completed quiz
+  const quizHistory = getState(KEY.quizHistory, []);
+  const testedDates = new Set();
+  quizHistory.forEach(q => q.wordIds && q.wordIds.forEach(id => testedDates.add(id)));
+
+  const untested = learned.filter(l => !testedDates.has(l.id));
+  if (untested.length < 7) return null;
+
+  // Take the oldest 7 untested
+  const toTest = untested.slice(0, 7);
+  return toTest.map(l => VOCAB.find(v => v.id === l.id)).filter(Boolean);
+}
+
+function generateQuizQuestions(words) {
+  return words.map((word, i) => {
+    // Alternate between two question types
+    if (i % 2 === 0) {
+      // What does X mean?
+      const wrongOptions = VOCAB
+        .filter(v => v.id !== word.id && v.cat === word.cat || v.id !== word.id)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(v => v.def);
+      const options = [word.def, ...wrongOptions].sort(() => Math.random() - 0.5);
+      return {
+        type: 'definition',
+        word: word.word,
+        wordId: word.id,
+        question: `What does "<span class='quiz-word-highlight'>${word.word}</span>" mean?`,
+        correctAnswer: word.def,
+        options: options
+      };
+    } else {
+      // Which word fits the sentence?
+      const example = word.examples[0].replace(new RegExp(word.word, 'gi'), '________');
+      const wrongWords = VOCAB
+        .filter(v => v.id !== word.id)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(v => v.word);
+      const options = [word.word, ...wrongWords].sort(() => Math.random() - 0.5);
+      return {
+        type: 'fill',
+        word: word.word,
+        wordId: word.id,
+        question: `Fill in the blank: <em style="color:var(--text-muted); font-style:normal;">"${example}"</em>`,
+        correctAnswer: word.word,
+        options: options
+      };
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  UI RENDERING
+// ═══════════════════════════════════════════════
+
+// TODAY TAB
+function renderToday() {
+  const word = getTodaysWord();
+  const learnedToday = hasLearnedToday();
+  const card = document.getElementById('todayCard');
+  const learnedMsg = document.getElementById('learnedTodayMsg');
+
+  if (learnedToday) {
+    card.style.display = 'none';
+    learnedMsg.style.display = 'block';
+  } else {
+    card.style.display = 'block';
+    learnedMsg.style.display = 'none';
+    showTodayCard(false);
+  }
+}
+
+function showTodayCard(forceShow) {
+  const word = getTodaysWord();
+  const learnedToday = hasLearnedToday();
+  const card = document.getElementById('todayCard');
+  const learnedMsg = document.getElementById('learnedTodayMsg');
+
+  card.style.display = 'block';
+  if (!forceShow) learnedMsg.style.display = 'none';
+
+  const catEmoji = { everyday: '💬', professional: '💼', idiom: '💡' };
+  const catLabel = { everyday: 'Everyday', professional: 'Professional', idiom: 'Idiom' };
+  const dayNum = getDayIndex() + 1;
+
+  card.innerHTML = `
+    <div class="word-card fade-in" id="mainWordCard">
+      <div class="word-day-label">Day ${dayNum} of ${VOCAB.length} · ${new Date().toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long'})}</div>
+      <div class="word-category-badge">${catEmoji[word.cat]} ${catLabel[word.cat]}</div>
+      <div class="word-of-day">${word.word}</div>
+      <div class="word-phonetic">${word.phonetic}</div>
+      <div class="word-pos">${word.pos}</div>
+      <div class="word-definition">${word.def}</div>
+    </div>
+
+    <div class="detail-card fade-in">
+      <div class="detail-title">✏️ Example Sentences</div>
+      ${word.examples.map(ex => {
+        const highlighted = ex.replace(new RegExp(`(${word.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '<em>$1</em>');
+        return `<div class="example-item">${highlighted}</div>`;
+      }).join('')}
+    </div>
+
+    <div class="detail-card fade-in">
+      <div class="detail-title">🧠 Memory Tip</div>
+      <div class="memory-tip">💡 ${word.tip}</div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-success" id="learnBtn" onclick="learnedWord()" ${learnedToday ? 'disabled' : ''}>
+        ${learnedToday ? '✅ Already Marked Learned' : '✅ I\'ve Learned This Word!'}
+      </button>
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-secondary" onclick="openWordModal(${word.id})">👁 Full Details</button>
+    </div>
+  `;
+}
+
+function learnedWord() {
+  markTodayLearned();
+  const card = document.getElementById('mainWordCard');
+  card.classList.add('celebrating');
+  setTimeout(() => {
+    showToast('🎉 Word learned! Great work, Pratik!');
+    setTimeout(renderToday, 800);
+  }, 500);
+  checkQuizAvailability();
+}
+
+// LIBRARY TAB
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === f);
+  });
+  renderLibrary();
+}
+
+function renderLibrary() {
+  const grid = document.getElementById('wordsGrid');
+  const learned = getLearnedWords();
+  const learnedIds = new Set(learned.map(l => l.id));
+
+  const query = document.getElementById('searchBox').value.toLowerCase();
+
+  let words = VOCAB.filter(w => learnedIds.has(w.id));
+  if (currentFilter !== 'all') words = words.filter(w => w.cat === currentFilter);
+  if (query) words = words.filter(w =>
+    w.word.toLowerCase().includes(query) ||
+    w.def.toLowerCase().includes(query)
+  );
+
+  if (words.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="icon">📚</div>
+      <h3>${query ? 'No matching words' : 'No words learned yet'}</h3>
+      <p>${query ? 'Try a different search term.' : 'Head to Today\'s tab and learn your first word!'}</p>
+    </div>`;
+    return;
+  }
+
+  const catEmoji = { everyday: '💬', professional: '💼', idiom: '💡' };
+
+  grid.innerHTML = words.map(w => `
+    <div class="word-tile" onclick="openWordModal(${w.id})">
+      <div class="word-tile-name">${w.word}</div>
+      <div class="word-tile-pos">${w.pos}</div>
+      <div class="word-tile-def">${w.def}</div>
+      <span class="word-tile-cat cat-${w.cat}">${catEmoji[w.cat]} ${w.cat.charAt(0).toUpperCase() + w.cat.slice(1)}</span>
+    </div>
+  `).join('');
+}
+
+// WORD MODAL
+function openWordModal(wordId) {
+  const word = VOCAB.find(w => w.id === wordId);
+  if (!word) return;
+  const catEmoji = { everyday: '💬', professional: '💼', idiom: '💡' };
+  const catLabel = { everyday: 'Everyday', professional: 'Professional', idiom: 'Idiom' };
+
+  document.getElementById('wordModalContent').innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="margin-bottom:20px;">
+      <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">${catEmoji[word.cat]} ${catLabel[word.cat]}</div>
+      <div class="modal-word">${word.word}</div>
+      <div style="color:var(--text-muted); font-style:italic; margin-bottom:4px;">${word.phonetic}</div>
+      <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted);">${word.pos}</div>
+    </div>
+    <div class="divider"></div>
+    <div style="margin-bottom:16px;">
+      <div class="detail-title">📖 Definition</div>
+      <p style="font-size:16px; line-height:1.6; color:var(--text);">${word.def}</p>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div class="detail-title">✏️ Examples</div>
+      ${word.examples.map(ex => {
+        const highlighted = ex.replace(new RegExp(`(${word.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '<em style="color:var(--primary);font-style:normal;font-weight:600;">$1</em>');
+        return `<div class="example-item">${highlighted}</div>`;
+      }).join('')}
+    </div>
+    <div>
+      <div class="detail-title">🧠 Memory Tip</div>
+      <div class="memory-tip">💡 ${word.tip}</div>
+    </div>
+  `;
+  document.getElementById('wordModal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('wordModal')) {
+    document.getElementById('wordModal').classList.remove('open');
+  }
+}
+
+// QUIZ TAB
+function checkQuizAvailability() {
+  const quizWords = getQuizWords();
+  const badge = document.getElementById('quizBadge');
+  badge.style.display = quizWords ? 'block' : 'none';
+}
+
+function renderQuiz() {
+  const area = document.getElementById('quizArea');
+  const quizWords = getQuizWords();
+  const history = getState(KEY.quizHistory, []);
+
+  if (currentQuiz) {
+    renderQuizQuestions(area);
+    return;
+  }
+
+  if (!quizWords) {
+    const learned = getLearnedWords().length;
+    const needed = Math.max(0, 7 - learned);
+    area.innerHTML = `
+      <div class="quiz-intro">
+        <div class="icon">🧠</div>
+        <h2>Weekly Knowledge Test</h2>
+        <p>Your quiz will unlock after you learn <strong>7 words</strong>. Keep going!</p>
+        <div class="quiz-countdown">
+          <p>You've learned <strong>${learned}</strong> words. Need <strong>${needed}</strong> more.</p>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="width:${Math.min(100,(learned/7)*100)}%"></div>
+          </div>
+          <div class="quiz-question-num">${learned} / 7 words</div>
+        </div>
+        <button class="btn btn-outline" onclick="switchTab('today')">📖 Learn Today's Word →</button>
+      </div>
+    `;
+    return;
+  }
+
+  area.innerHTML = `
+    <div class="quiz-intro">
+      <div class="icon">🎯</div>
+      <h2>Quiz Ready!</h2>
+      <p>You have <strong>${quizWords.length} words</strong> to be tested on. Good luck!</p>
+      <p style="font-size:14px; color:var(--text-muted); margin-top:-10px;">This quiz covers: ${quizWords.map(w => `<strong>${w.word}</strong>`).join(', ')}</p>
+      <button class="btn btn-primary" style="max-width:250px; margin:0 auto;" onclick="startQuiz()">Start Quiz 🚀</button>
+    </div>
+  `;
+}
+
+function startQuiz() {
+  const quizWords = getQuizWords();
+  currentQuiz = {
+    questions: generateQuizQuestions(quizWords),
+    words: quizWords,
+    currentQ: 0,
+    answers: {}
+  };
+  quizAnswers = {};
+  renderQuizQuestions(document.getElementById('quizArea'));
+}
+
+function renderQuizQuestions(area) {
+  if (!currentQuiz) return;
+  const q = currentQuiz.questions[currentQuiz.currentQ];
+  const total = currentQuiz.questions.length;
+  const qNum = currentQuiz.currentQ + 1;
+
+  area.innerHTML = `
+    <div class="quiz-countdown" style="margin-bottom:16px;">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" style="width:${((qNum-1)/total)*100}%"></div>
+      </div>
+      <div class="quiz-question-num">Question ${qNum} of ${total}</div>
+    </div>
+    <div class="quiz-q-card fade-in">
+      <div class="quiz-q-num">Question ${qNum} · ${q.type === 'definition' ? 'Choose the correct meaning' : 'Fill in the blank'}</div>
+      <div class="quiz-q-text">${q.question}</div>
+      <div class="options-grid" id="optionsGrid">
+        ${q.options.map((opt, i) => `
+          <button class="option-btn" id="opt-${i}" onclick="selectOption(${i}, '${escapeStr(opt)}')">${opt}</button>
+        `).join('')}
+      </div>
+    </div>
+    <div id="nextBtnArea"></div>
+  `;
+}
+
+function escapeStr(s) {
+  return s.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function selectOption(idx, value) {
+  if (!currentQuiz) return;
+  const q = currentQuiz.questions[currentQuiz.currentQ];
+  const isCorrect = value === q.correctAnswer;
+  currentQuiz.answers[currentQuiz.currentQ] = { selected: value, correct: q.correctAnswer, wordId: q.wordId, word: q.word, isCorrect };
+
+  // Highlight answers
+  document.querySelectorAll('.option-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (btn.textContent === q.correctAnswer) btn.classList.add('correct');
+    if (i === idx && !isCorrect) btn.classList.add('wrong');
+  });
+
+  // Show next button
+  const nextArea = document.getElementById('nextBtnArea');
+  const isLast = currentQuiz.currentQ === currentQuiz.questions.length - 1;
+  nextArea.innerHTML = `
+    <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
+      <div style="flex:1; padding:12px 16px; border-radius:10px; background:${isCorrect ? 'var(--success-light)' : 'var(--danger-light)'}; color:${isCorrect ? 'var(--success)' : 'var(--danger)'}; font-weight:700; font-size:14px;">
+        ${isCorrect ? '✅ Correct! Well done.' : `❌ Not quite. The answer is: "${q.correctAnswer}"`}
+      </div>
+      <button class="btn btn-primary" style="flex:0; white-space:nowrap;" onclick="${isLast ? 'finishQuiz()' : 'nextQuestion()'}">
+        ${isLast ? 'See Results 🎯' : 'Next →'}
+      </button>
+    </div>
+  `;
+}
+
+function nextQuestion() {
+  currentQuiz.currentQ++;
+  renderQuizQuestions(document.getElementById('quizArea'));
+}
+
+function finishQuiz() {
+  const answers = currentQuiz.answers;
+  const questions = currentQuiz.questions;
+  const correctCount = Object.values(answers).filter(a => a.isCorrect).length;
+  const score = Math.round((correctCount / questions.length) * 100);
+
+  // Save quiz history
+  const history = getState(KEY.quizHistory, []);
+  history.push({
+    date: getTodayStr(),
+    score,
+    correct: correctCount,
+    total: questions.length,
+    wordIds: currentQuiz.words.map(w => w.id),
+    mistakes: Object.values(answers).filter(a => !a.isCorrect).map(a => ({ word: a.word, wordId: a.wordId, yourAnswer: a.selected, correctAnswer: a.correct }))
+  });
+  setState(KEY.quizHistory, history);
+
+  const quiz = currentQuiz;
+  currentQuiz = null;
+  checkQuizAvailability();
+  renderQuizResults(quiz, score, correctCount, answers);
+}
+
+function renderQuizResults(quiz, score, correctCount, answers) {
+  const area = document.getElementById('quizArea');
+  const grade = score >= 80 ? 'excellent' : score >= 50 ? 'good' : 'needs-work';
+  const gradeMsg = score >= 80 ? '🌟 Excellent!' : score >= 50 ? '👍 Good effort!' : '💪 Keep practising!';
+  const mistakes = Object.values(answers).filter(a => !a.isCorrect);
+
+  area.innerHTML = `
+    <div class="quiz-results fade-in">
+      <div class="score-circle ${grade}">
+        <div class="score-num">${score}%</div>
+        <div class="score-label">${correctCount}/${quiz.questions.length}</div>
+      </div>
+      <h2 style="text-align:center; font-size:24px; font-weight:900; margin-bottom:8px;">${gradeMsg}</h2>
+      <p style="text-align:center; color:var(--text-muted); margin-bottom:24px;">You got ${correctCount} out of ${quiz.questions.length} questions right.</p>
+
+      ${mistakes.length > 0 ? `
+        <div style="margin-bottom:16px;">
+          <div class="section-label">📚 Words to Review</div>
+          ${mistakes.map(m => {
+            const word = VOCAB.find(v => v.id === m.wordId);
+            return `
+              <div class="correction-item">
+                <div class="correction-word">${m.word}</div>
+                <div class="correction-your">❌ Your answer: ${m.yourAnswer.slice(0, 80)}${m.yourAnswer.length > 80 ? '...' : ''}</div>
+                <div class="correction-correct">✅ Correct: ${m.correctAnswer.slice(0, 80)}${m.correctAnswer.length > 80 ? '...' : ''}</div>
+                ${word ? `<div class="correction-def">💡 Remember: ${word.tip}</div>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      ` : `
+        <div class="detail-card" style="text-align:center; margin-bottom:16px;">
+          <div style="font-size:40px; margin-bottom:8px;">🏆</div>
+          <p style="font-weight:700; color:var(--success);">Perfect score — no mistakes to correct!</p>
+        </div>
+      `}
+
+      <button class="btn btn-primary" onclick="switchTab('today')">Back to Learning 📖</button>
+    </div>
+  `;
+  renderProgressTab();
+}
+
+// PROGRESS TAB
+function renderProgressTab() {
+  const learned = getLearnedWords();
+  const history = getState(KEY.quizHistory, []);
+  const streak = getStreak();
+
+  document.getElementById('statsTotal').textContent = learned.length;
+  document.getElementById('statsStreak').textContent = streak;
+  document.getElementById('statsQuizzes').textContent = history.length;
+
+  // Category breakdown
+  const cats = { everyday: 0, professional: 0, idiom: 0 };
+  learned.forEach(l => {
+    const word = VOCAB.find(v => v.id === l.id);
+    if (word) cats[word.cat]++;
+  });
+  const total = learned.length || 1;
+  document.getElementById('catBreakdown').innerHTML = `
+    <div class="cat-bar-item">
+      <div class="cat-bar-label">💬 Everyday</div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${(cats.everyday/total)*100}%; background:var(--primary);"></div></div>
+      <div class="cat-bar-count">${cats.everyday} words</div>
+    </div>
+    <div class="cat-bar-item">
+      <div class="cat-bar-label">💼 Professional</div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${(cats.professional/total)*100}%; background:var(--success);"></div></div>
+      <div class="cat-bar-count">${cats.professional} words</div>
+    </div>
+    <div class="cat-bar-item">
+      <div class="cat-bar-label">💡 Idioms</div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${(cats.idiom/total)*100}%; background:var(--warning);"></div></div>
+      <div class="cat-bar-count">${cats.idiom} words</div>
+    </div>
+  `;
+
+  // Quiz history
+  const historyEl = document.getElementById('quizHistory');
+  if (history.length === 0) {
+    historyEl.innerHTML = `<div class="empty-state"><div class="icon">📝</div><h3>No quizzes yet</h3><p>Learn 7 words to unlock your first quiz!</p></div>`;
+    return;
+  }
+  historyEl.innerHTML = history.slice().reverse().map(h => {
+    const grade = h.score >= 80 ? 'var(--success-light)' : h.score >= 50 ? 'var(--warning-light)' : 'var(--danger-light)';
+    const gradeColor = h.score >= 80 ? 'var(--success)' : h.score >= 50 ? 'var(--warning)' : 'var(--danger)';
+    return `
+      <div class="history-item">
+        <div>
+          <div class="history-date">${new Date(h.date).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'})}</div>
+          <div style="font-size:14px; color:var(--text-muted);">${h.correct}/${h.total} correct · ${h.mistakes?.length || 0} mistakes</div>
+        </div>
+        <div class="history-score-badge" style="background:${grade}; color:${gradeColor};">${h.score}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+  if (tab === 'library') renderLibrary();
+  if (tab === 'quiz') renderQuiz();
+  if (tab === 'progress') renderProgressTab();
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+function showToast(msg, duration = 3000) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+// ═══════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════
+function initTheme() {
+  const theme = getState(KEY.theme, 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  setState(KEY.theme, next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+});
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+function init() {
+  initStartDate();
+  initTheme();
+
+  // Streak
+  const streak = getStreak();
+  document.getElementById('streakBadge').textContent = '🔥 ' + streak;
+  document.getElementById('statsStreak').textContent = streak;
+
+  // Render today
+  renderToday();
+  checkNotificationBanner();
+  triggerDailyNotification();
+  checkQuizAvailability();
+}
+
+init();
+
+// ═══════════════════════════════════════════════
+//  PWA INSTALL PROMPT
+// ═══════════════════════════════════════════════
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  // Show install banner only if not already installed
+  if (!window.matchMedia('(display-mode: standalone)').matches) {
+    document.getElementById('installBanner').style.display = 'flex';
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').style.display = 'none';
+  showToast('🎉 WordWise installed! Find it on your home screen.');
+  deferredInstallPrompt = null;
+});
+
+function installPWA() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') {
+        showToast('Installing WordWise...');
+      }
+      deferredInstallPrompt = null;
+      document.getElementById('installBanner').style.display = 'none';
+    });
+  } else {
+    // iOS Safari fallback — show manual instructions
+    showToast('On iPhone: tap Share → "Add to Home Screen"', 5000);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  SERVICE WORKER REGISTRATION (PWA)
+// ═══════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('WordWise SW registered:', reg.scope))
+      .catch(err => console.warn('SW registration failed:', err));
+  });
+}
+
+// Handle ?tab= URL param (for PWA shortcuts)
+(function handleTabParam() {
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get('tab');
+  if (tab && ['today','library','quiz','progress'].includes(tab)) {
+    switchTab(tab);
+  }
+})();
+</script>
+</body>
+</html>
