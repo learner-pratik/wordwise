@@ -1345,45 +1345,90 @@ function getStreak() {
 }
 
 // ═══════════════════════════════════════════════
-//  NOTIFICATIONS
+//  WEB PUSH NOTIFICATIONS
+//  Uses the Push API so notifications arrive at
+//  9 AM every day in the user's local timezone
+//  — even when the app is closed.
 // ═══════════════════════════════════════════════
+
+// Your VAPID public key (generated during setup).
+// If you regenerate keys, update this string and
+// set the matching env vars in Netlify.
+const VAPID_PUBLIC_KEY = 'BFOVLleAs-WWKvgyB_2bNsIQ6kGYS-NU4dvPIL_NQCgwWTj5j61DGPhQs2S5pxaNfdlW4WDOlHt7yI3Wi4vkWRQ';
+
+/** Convert a base64url string to a Uint8Array (required by pushManager.subscribe) */
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64  = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw     = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+/** Show or hide the "Enable notifications" banner */
 function checkNotificationBanner() {
   const banner = document.getElementById('notifBanner');
-  if (!('Notification' in window) || Notification.permission === 'granted') {
-    banner.style.display = 'none';
-  } else if (Notification.permission !== 'denied') {
-    banner.style.display = 'flex';
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    banner.style.display = 'none'; // browser doesn't support push
+    return;
+  }
+  if (Notification.permission === 'granted' && localStorage.getItem('ww_pushSubscribed')) {
+    banner.style.display = 'none'; // already subscribed
+  } else if (Notification.permission === 'denied') {
+    banner.style.display = 'none'; // blocked — can't ask again
   } else {
-    banner.style.display = 'none';
+    banner.style.display = 'flex'; // invite the user to enable
   }
 }
 
-function requestNotifications() {
-  Notification.requestPermission().then(p => {
-    if (p === 'granted') {
-      showToast('🔔 Notifications enabled! Open WordWise daily to get your reminder.');
-      document.getElementById('notifBanner').style.display = 'none';
-      setState(KEY.notifEnabled, true);
-      triggerDailyNotification();
+/**
+ * Called when the user taps "Enable" on the notification banner.
+ * 1. Requests notification permission.
+ * 2. Subscribes to Web Push via the service worker.
+ * 3. POSTs the subscription + timezone to the Netlify function.
+ */
+async function requestNotifications() {
+  const banner = document.getElementById('notifBanner');
+
+  // 1. Ask for permission
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') {
+    showToast('Notifications blocked. Enable them in your browser / iPhone settings.');
+    return;
+  }
+
+  // 2. Wait for SW to be ready, then create a push subscription
+  try {
+    const swReg = await navigator.serviceWorker.ready;
+    const subscription = await swReg.pushManager.subscribe({
+      userVisibleOnly:      true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    });
+
+    // 3. Send subscription + user context to the Netlify backend
+    const startDate = getState(KEY.startDate, getTodayStr());
+    const timezone  = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+
+    const res = await fetch('/api/subscribe', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ subscription, timezone, startDate }),
+    });
+
+    if (res.ok) {
+      localStorage.setItem('ww_pushSubscribed', '1');
+      banner.style.display = 'none';
+      showToast('🔔 Done! You\'ll get your daily word at 9 AM every morning.');
     } else {
-      showToast('Notifications blocked. Enable them in browser settings.');
+      throw new Error('Server returned ' + res.status);
     }
-  });
+  } catch (err) {
+    console.error('Push subscription failed:', err);
+    showToast('Could not enable notifications. Please try again later.');
+  }
 }
 
-function triggerDailyNotification() {
-  if (Notification.permission !== 'granted') return;
-  const lastNotif = localStorage.getItem('ww_lastNotif');
-  const today = getTodayStr();
-  if (lastNotif === today) return;
-  const word = getTodaysWord();
-  const notif = new Notification('📚 WordWise — Today\'s Word!', {
-    body: `"${word.word}" — ${word.def.slice(0, 80)}...`,
-    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>'
-  });
-  localStorage.setItem('ww_lastNotif', today);
-  notif.onclick = () => window.focus();
-}
+// Legacy stub — kept so no other code breaks if called
+function triggerDailyNotification() {}
 
 // ═══════════════════════════════════════════════
 //  QUIZ ENGINE
@@ -1917,7 +1962,6 @@ function init() {
   // Render today
   renderToday();
   checkNotificationBanner();
-  triggerDailyNotification();
   checkQuizAvailability();
 }
 

@@ -1,0 +1,7 @@
+[build]
+  functions = "netlify/functions"
+
+# Run every hour — the notify function checks each subscriber's
+# local timezone and only fires if it is currently 9 AM for them.
+[functions."notify"]
+  schedule = "0 * * * *"
