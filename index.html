@@ -1397,17 +1397,44 @@ async function requestNotifications() {
   }
 
   // 2. Wait for SW to be ready, then create a push subscription
+  let swReg;
   try {
-    const swReg = await navigator.serviceWorker.ready;
-    const subscription = await swReg.pushManager.subscribe({
+    swReg = await navigator.serviceWorker.ready;
+  } catch (err) {
+    console.error('SW not ready:', err);
+    showToast('Service worker not ready — try reloading the page.');
+    return;
+  }
+
+  if (!swReg.pushManager) {
+    showToast('Push notifications are not supported in this browser.');
+    return;
+  }
+
+  let subscription;
+  try {
+    subscription = await swReg.pushManager.subscribe({
       userVisibleOnly:      true,
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
     });
+  } catch (err) {
+    console.error('pushManager.subscribe failed:', err);
+    // On iOS this fails if the app is opened in Safari instead of from the home screen
+    if (err.name === 'NotAllowedError') {
+      showToast('Permission denied. Check notification settings and try again.');
+    } else if (window.navigator.standalone === false) {
+      showToast('📱 On iPhone, first add WordWise to your Home Screen, then enable notifications from there.');
+    } else {
+      showToast('Could not create push subscription: ' + err.message);
+    }
+    return;
+  }
 
-    // 3. Send subscription + user context to the Netlify backend
-    const startDate = getState(KEY.startDate, getTodayStr());
-    const timezone  = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  // 3. Send subscription + user context to the Netlify backend
+  const startDate = getState(KEY.startDate, getTodayStr());
+  const timezone  = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
+  try {
     const res = await fetch('/api/subscribe', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1419,11 +1446,13 @@ async function requestNotifications() {
       banner.style.display = 'none';
       showToast('🔔 Done! You\'ll get your daily word at 9 AM every morning.');
     } else {
-      throw new Error('Server returned ' + res.status);
+      const body = await res.text().catch(() => '');
+      console.error('subscribe endpoint error:', res.status, body);
+      showToast('Server error (' + res.status + '). Check Netlify function logs.');
     }
   } catch (err) {
-    console.error('Push subscription failed:', err);
-    showToast('Could not enable notifications. Please try again later.');
+    console.error('fetch /api/subscribe failed:', err);
+    showToast('Network error saving subscription — are you online?');
   }
 }
 

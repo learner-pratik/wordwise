@@ -1,1 +1,5 @@
-/* /index.html 200
+# Route API calls to Netlify Functions BEFORE the catch-all SPA rule
+/api/*  /.netlify/functions/:splat  200
+
+# SPA fallback — all other routes serve index.html
+/*  /index.html  200
