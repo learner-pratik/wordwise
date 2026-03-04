@@ -1446,9 +1446,14 @@ async function requestNotifications() {
       banner.style.display = 'none';
       showToast('🔔 Done! You\'ll get your daily word at 9 AM every morning.');
     } else {
-      const body = await res.text().catch(() => '');
-      console.error('subscribe endpoint error:', res.status, body);
-      showToast('Server error (' + res.status + '). Check Netlify function logs.');
+      // Parse and surface the real server error so it's visible without digging into logs
+      let serverMsg = 'status ' + res.status;
+      try {
+        const json = await res.json();
+        if (json.error) serverMsg = json.error;
+      } catch { /* response wasn't JSON */ }
+      console.error('[subscribe] server error:', res.status, serverMsg);
+      showToast('Server error: ' + serverMsg, 8000);
     }
   } catch (err) {
     console.error('fetch /api/subscribe failed:', err);

@@ -1,6 +1,14 @@
 [build]
   functions = "netlify/functions"
 
+[build.environment]
+  # Pin to Node 18 — required by web-push and @netlify/blobs v7
+  NODE_VERSION = "18"
+
+[functions]
+  # nft (Node File Tracing) reliably bundles node_modules with each function
+  node_bundler = "nft"
+
 # Run every hour — the notify function checks each subscriber's
 # local timezone and only fires if it is currently 9 AM for them.
 [functions."notify"]
